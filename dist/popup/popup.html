@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trello Bulk Member Manager</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <img src="../assets/icons/Trello-Emblem_4_48x48.png" alt="Trello" class="logo">
+        <h1>Bulk Member Manager</h1>
+      </div>
+      <div id="user-info" class="user-info hidden">
+        <span id="user-name"></span>
+        <button id="logout-btn" class="btn-icon" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+      <div class="login-container">
+        <div class="login-icon">
+          <img src="../assets/icons/Trello-Emblem_5_128x128.png" alt="Trello">
+        </div>
+        <h2>Connect to Trello</h2>
+        <p>Authorize this extension to manage your Trello boards and workspaces.</p>
+        <button id="login-btn" class="btn btn-primary btn-large">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 2H3c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM10 18H5V6h5v12zm9-6h-5V6h5v6z"/>
+          </svg>
+          Connect with Trello
+        </button>
+        <p class="login-note">
+          <small>You'll be redirected to Trello to authorize access. Your credentials are never stored.</small>
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Screen -->
+    <div id="main-screen" class="screen hidden">
+      <!-- Navigation Tabs -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="boards">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+          Boards
+        </button>
+        <button class="tab" data-tab="workspaces">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Workspaces
+        </button>
+      </nav>
+
+      <!-- Tab Content: Boards -->
+      <div id="boards-tab" class="tab-content active">
+        <!-- Action Selection -->
+        <div class="action-selector">
+          <label>Action:</label>
+          <select id="board-action">
+            <option value="add">Add Members</option>
+            <option value="remove">Remove Members</option>
+          </select>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+          <input type="text" id="board-search" placeholder="Search boards..." class="search-input">
+          <button id="board-refresh" class="btn-icon" title="Refresh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Board List -->
+        <div class="list-container">
+          <div class="list-header">
+            <label class="checkbox-container">
+              <input type="checkbox" id="select-all-boards">
+              <span class="checkmark"></span>
+              Select All
+            </label>
+            <span id="board-count" class="count-badge">0 selected</span>
+          </div>
+          <div id="board-list" class="item-list">
+            <!-- Boards will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Email Input (for Add action) -->
+        <div id="board-email-section" class="email-section">
+          <label>Email addresses (one per line):</label>
+          <textarea id="board-emails" placeholder="user1@example.com&#10;user2@example.com"></textarea>
+        </div>
+
+        <!-- Username Input (for Remove action) -->
+        <div id="board-username-section" class="username-section hidden">
+          <label>Trello username or email to remove:</label>
+          <input type="text" id="board-username" placeholder="username or email">
+        </div>
+
+        <!-- Submit Button -->
+        <button id="board-submit" class="btn btn-primary btn-block" disabled>
+          Execute Action
+        </button>
+      </div>
+
+      <!-- Tab Content: Workspaces -->
+      <div id="workspaces-tab" class="tab-content hidden">
+        <!-- Action Selection -->
+        <div class="action-selector">
+          <label>Action:</label>
+          <select id="workspace-action">
+            <option value="add">Add Members</option>
+            <option value="remove">Remove Members</option>
+          </select>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+          <input type="text" id="workspace-search" placeholder="Search workspaces..." class="search-input">
+          <button id="workspace-refresh" class="btn-icon" title="Refresh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Workspace List -->
+        <div class="list-container">
+          <div class="list-header">
+            <label class="checkbox-container">
+              <input type="checkbox" id="select-all-workspaces">
+              <span class="checkmark"></span>
+              Select All
+            </label>
+            <span id="workspace-count" class="count-badge">0 selected</span>
+          </div>
+          <div id="workspace-list" class="item-list">
+            <!-- Workspaces will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Email Input (for Add action) -->
+        <div id="workspace-email-section" class="email-section">
+          <label>Email addresses (one per line):</label>
+          <textarea id="workspace-emails" placeholder="user1@example.com&#10;user2@example.com"></textarea>
+        </div>
+
+        <!-- Username Input (for Remove action) -->
+        <div id="workspace-username-section" class="username-section hidden">
+          <label>Trello username or email to remove:</label>
+          <input type="text" id="workspace-username" placeholder="username or email">
+        </div>
+
+        <!-- Submit Button -->
+        <button id="workspace-submit" class="btn btn-primary btn-block" disabled>
+          Execute Action
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress/Results Overlay -->
+    <div id="progress-overlay" class="overlay hidden">
+      <div id="progress-container" class="progress-container">
+        <!-- Progress content will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="popup-bundled.js"></script>
+</body>
+</html>

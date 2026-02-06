@@ -1,0 +1,43 @@
+{
+  "name": "Trello Bulk Member Manager",
+  "description": "Streamline Trello workspace and board management by enabling bulk member modifications. Add or remove multiple users across boards and workspaces with ease.",
+  "version": "2.0.0",
+  "manifest_version": 3,
+
+  "icons": {
+    "16": "assets/icons/Trello-Emblem_16x16.png",
+    "32": "assets/icons/Trello-Emblem_2_32x32.png",
+    "48": "assets/icons/Trello-Emblem_4_48x48.png",
+    "128": "assets/icons/Trello-Emblem_5_128x128.png"
+  },
+
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/Trello-Emblem_16x16.png",
+      "32": "assets/icons/Trello-Emblem_2_32x32.png",
+      "48": "assets/icons/Trello-Emblem_4_48x48.png"
+    },
+    "default_popup": "popup/popup.html",
+    "default_title": "Trello Bulk Member Manager"
+  },
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "permissions": [
+    "storage",
+    "identity"
+  ],
+
+  "host_permissions": [
+    "https://trello.com/*",
+    "https://api.trello.com/*"
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+
+  "minimum_chrome_version": "88"
+}

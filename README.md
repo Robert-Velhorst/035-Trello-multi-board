@@ -1,54 +1,138 @@
-# Trello Bulk Member Manager - Chrome Extension
+# Trello Bulk Member Manager
 
-This Chrome Extension is designed to streamline Trello workspace and board management by enabling **bulk member modifications**. Whether you need to add or remove multiple users across boards or workspaces, this tool simplifies the process with a user-friendly interface and powerful automation.
+A Chrome extension for managing Trello board and workspace members in bulk. Add or remove multiple users across multiple boards and workspaces with a single action.
 
-## 🚀 Features
+## Features
 
-- ✅ Add multiple users to multiple Trello boards
-- ✅ Remove users from selected boards or workspaces in bulk
-- ✅ Easy-to-use interface integrated within a browser
-- ✅ Simple input mechanism for email lists
-- ✅ One-click automation without needing to manually open every board
+- **Bulk Add Members** to multiple boards or workspaces at once
+- **Bulk Remove Members** from multiple boards or workspaces at once
+- **Search & Filter** boards and workspaces by name
+- **Select All / Deselect All** for quick selection
+- **Progress Tracking** with real-time progress bars during operations
+- **Error Reporting** with detailed failure summaries
+- **Secure OAuth** authentication (no hardcoded credentials)
+- **Modern UI** with clean, professional design
 
-- ## 🛠 Installation
+## Screenshots
 
-To install the extension locally:
+The extension popup provides a clean tabbed interface:
 
-1. Download or clone this repository.
-2. Open Google Chrome and navigate to `chrome://extensions`.
-3. Enable **Developer mode** (top right corner).
-4. Click on **Load unpacked**.
-5. Select the `Trelloallfunctionalitiesprefected` folder from the extracted contents.
+- **Boards Tab** - Select boards and manage members
+- **Workspaces Tab** - Select workspaces and manage members
+- **Progress Overlay** - Real-time tracking of bulk operations
 
-## 🖥️ Usage
+## Installation
 
-1. Open the extension from the Chrome toolbar.
-2. Choose the desired operation:
-   - Add users to boards or workspaces
-   - Remove users from boards or workspaces
-3. Paste the list of emails.
-4. Click the corresponding action button.
+### From Chrome Web Store
 
-> Make sure you're logged in to Trello in your browser before using the extension.
+*(Coming soon)*
 
-## 🔒 Permissions
+### Manual Installation (Developer Mode)
 
-This extension only interacts with Trello via the browser UI and does **not** store or share any user data.
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/Noodzakelijk-Online/035-Trello-multi-board.git
+   ```
+2. Get a Trello API Key from [https://trello.com/power-ups/admin](https://trello.com/power-ups/admin)
+3. Edit `dist/popup/popup-bundled.js` and replace `YOUR_TRELLO_APP_KEY` with your key
+4. Open Chrome and go to `chrome://extensions`
+5. Enable **Developer mode**
+6. Click **Load unpacked** and select the `dist` folder
+7. Click the extension icon and connect to Trello
 
-## 📌 Requirements
+See [dist/SETUP.md](dist/SETUP.md) for detailed setup instructions.
 
-- Google Chrome (latest version)
-- Trello account
-- Developer mode enabled for local usage
+## Project Structure
 
-## 🤝 Contribution
+```
+trello-extension-enhanced/
+├── dist/                          # Production-ready extension
+│   ├── manifest.json              # Chrome extension manifest (v3)
+│   ├── SETUP.md                   # Setup instructions
+│   ├── assets/icons/              # Extension icons
+│   ├── background/
+│   │   └── service-worker.js      # Background service worker
+│   └── popup/
+│       ├── popup.html             # Popup UI
+│       ├── popup.css              # Styles
+│       └── popup-bundled.js       # Bundled application logic
+├── src/                           # Source code (modular)
+│   ├── api/
+│   │   ├── auth.js                # Trello OAuth authentication
+│   │   └── trello-client.js       # Trello API client
+│   ├── background/
+│   │   └── service-worker.js      # Background service worker
+│   ├── popup/
+│   │   ├── popup.html             # Popup HTML
+│   │   ├── popup.css              # Popup styles
+│   │   └── popup.js               # Popup logic (ES modules)
+│   ├── ui/components/
+│   │   └── progress.js            # UI components (progress, toast, dialog)
+│   └── utils/
+│       └── helpers.js             # Utility functions
+└── README.md                      # This file
+```
 
-Feel free to fork the repo and suggest improvements. PRs are welcome for UI enhancements, code optimizations, or feature additions!
+## Architecture
 
-## 📜 License
+### v2.0 Improvements over v1.x
 
-This project is open source and available under the [MIT License](LICENSE).
+| Aspect | v1.x (Legacy) | v2.0 (Current) |
+|--------|---------------|-----------------|
+| **Security** | Hardcoded API key & token | Secure OAuth2 per-user authentication |
+| **Manifest** | Manifest V2 | Manifest V3 |
+| **Code Size** | ~45,000 lines (1.4 MB) | ~800 lines (48 KB) |
+| **Architecture** | Monolithic, duplicated code | Modular, DRY components |
+| **Error Handling** | None | Comprehensive with user feedback |
+| **Progress** | No feedback | Real-time progress bars |
+| **UI** | Basic HTML | Modern, responsive design |
+| **Rate Limiting** | None | Built-in API rate limiting |
+| **Input Validation** | None | Email validation, form validation |
 
----
+### Security Model
 
-Made with ❤️ for Trello automation.
+- Uses Trello's official OAuth flow via `chrome.identity` API
+- Each user authenticates with their own Trello account
+- API tokens are stored in Chrome's encrypted local storage
+- No credentials are hardcoded or transmitted to third parties
+
+## API Reference
+
+The extension uses the [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/):
+
+- `GET /1/members/me/boards` - List user's boards
+- `GET /1/members/me/organizations` - List user's workspaces
+- `PUT /1/boards/{id}/members` - Add member to board
+- `DELETE /1/boards/{id}/members/{memberId}` - Remove member from board
+- `PUT /1/organizations/{id}/members` - Add member to workspace
+- `DELETE /1/organizations/{id}/members/{memberId}` - Remove member from workspace
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -am 'Add my feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Changelog
+
+### v2.0.0 (2026-02-06)
+- Complete rewrite with modern architecture
+- Migrated to Manifest V3
+- Implemented secure OAuth2 authentication
+- Added progress tracking with real-time feedback
+- Added toast notifications and confirmation dialogs
+- Reduced code size by ~97% through refactoring
+- Added search and filter functionality
+- Added comprehensive error handling
+- Modern, responsive UI design
+
+### v1.0.0 (Legacy)
+- Initial release with basic bulk member management
+- Manifest V2
+- Hardcoded credentials (security vulnerability)
